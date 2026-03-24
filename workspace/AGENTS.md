@@ -252,3 +252,40 @@ The goal: Be helpful without being annoying. Check in a few times a day, do usef
 ## Make It Yours
 
 This is a starting point. Add your own conventions, style, and rules as you figure out what works.
+
+## Конфигурация OpenClaw (КРИТИЧНО!)
+
+Настройки compaction и contextPruning ставятся ТОЛЬКО в `agents.defaults`, НЕ в корень конфига!
+
+Правильно (внутри agents.defaults):
+```json
+{
+  "agents": {
+    "defaults": {
+      "compaction": {
+        "mode": "safeguard",
+        "memoryFlush": { "enabled": true }
+      },
+      "contextPruning": {
+        "mode": "cache-ttl",
+        "ttl": "4h",
+        "keepLastAssistants": 3
+      }
+    }
+  }
+}
+```
+
+НЕПРАВИЛЬНО (в корне — gateway упадёт!):
+```json
+{
+  "compaction": { ... },
+  "contextPruning": { ... }
+}
+```
+
+Если gateway упал после изменения конфига:
+```bash
+openclaw doctor --fix
+openclaw gateway restart
+```
