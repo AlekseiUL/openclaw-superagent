@@ -151,4 +151,4 @@ I build and improve my own agent system daily. Everything I learn, every new ski
 
 ## License
 
-© 2026 Aleksei Ulianov. Free for personal use. Commercial use and redistribution without author's permission is prohibited.
+© 2026 Aleksei Ulianov / Sprut_AI. MIT License. Keep the original copyright and license notice when reusing, forking, modifying, packaging, or publishing this work.

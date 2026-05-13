@@ -6,7 +6,7 @@ Copyright (c) 2026 Aleksei Ulianov / Sprut_AI
 
 Canonical source: https://github.com/AlekseiUL/openclaw-superagent
 
-License scope: repository-level material is MIT unless a file or subdirectory contains its own LICENSE or explicit license notice. Components with their own license files keep their own terms.
+License scope: the repository is distributed under the MIT License. If a component includes its own license file, keep that component's copyright and license notice when redistributing.
 
 This project is maintained by Aleksei Ulianov / Sprut_AI.
 If this work is mirrored, repackaged, redistributed, or indexed elsewhere, this repository is the source of truth for the original public release.
