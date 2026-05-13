@@ -3,7 +3,6 @@
 > Комплексная самодиагностика для OpenClaw агента. Проверяет все критичные системы и предлагает конкретные решения.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](CHANGELOG.md)
 [![OpenClaw](https://img.shields.io/badge/OpenClaw-compatible-green.svg)](https://github.com/openclaw/openclaw)
 
 ---
@@ -124,11 +123,9 @@ bash auto-diagnostic.sh
 | Файл | Описание |
 |------|----------|
 | [SKILL.md](SKILL.md) | Рабочая версия (для личного агента) |
-| [SKILL-public.md](SKILL-public.md) | Универсальная версия (для публикации) |
 | [EXAMPLES.md](EXAMPLES.md) | 10 сценариев использования |
 | [PROBLEMS_DATABASE.md](PROBLEMS_DATABASE.md) | 28 проблем и решений |
 | [INSTALL.md](INSTALL.md) | Инструкция по установке |
-| [CHANGELOG.md](CHANGELOG.md) | История версий |
 
 ## 🔥 Когда использовать?
 

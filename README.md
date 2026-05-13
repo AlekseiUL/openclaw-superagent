@@ -13,6 +13,16 @@ If you found this project mirrored, repackaged, or redistributed elsewhere, chec
 
 Where permitted by the applicable license, if you reuse, fork, modify, package, or publish this work, keep the original copyright and license notice and link back to the canonical repository.
 
+## Who is this for?
+
+Thoth System is for OpenClaw users who want a complete agent workspace instead of wiring memory, diagnostics, crons, and safety rules by hand:
+
+- solo builders running a personal OpenClaw assistant;
+- operators who need memory, handoff, watchdog scripts, and self-diagnostics in one install;
+- agent tinkerers who want a working reference system to fork and adapt.
+
+It is not a hosted SaaS. You run it on your machine and keep responsibility for secrets, configs, and external actions.
+
 ## What You Get
 
 - **Persistent Memory** — file-based + vector search. Agent remembers everything across sessions
