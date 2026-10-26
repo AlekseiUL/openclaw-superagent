@@ -141,8 +141,8 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 # 1. Бэкап существующих файлов (ВСЕГДА)
 echo ""
 echo "📦 Бэкап существующих файлов..."
-BACKUP_DIR="$WORKSPACE/.backup-$(date +%Y%m%d-%H%M)"
-mkdir -p "$BACKUP_DIR"
+mkdir -p "$WORKSPACE"
+BACKUP_DIR=$(mktemp -d "$WORKSPACE/.backup-XXXXXXXX")
 BACKED_UP=0
 for f in SOUL.md IDENTITY.md USER.md AGENTS.md MEMORY.md TOOLS.md HEARTBEAT.md BOOTSTRAP.md; do
     if [ -f "$WORKSPACE/$f" ]; then
@@ -156,6 +156,7 @@ else
     echo "  ℹ️  Нет файлов для бэкапа"
 fi
 
+COPIED_PATHS=()
 # Функция безопасного копирования
 safe_copy_file() {
     local src="$1"
@@ -175,18 +176,20 @@ safe_copy_file() {
                 echo ""
                 read -p "  Заменить? [y/N/d(diff)]: " CHOICE
                 case "$CHOICE" in
-                    y|Y) cp "$src" "$dst"; echo "  ✅ Заменён: $fname" ;;
+                    y|Y) cp "$src" "$dst"; COPIED_PATHS+=("$dst"); echo "  ✅ Заменён: $fname" ;;
                     d|D) diff -u "$dst" "$src" 2>/dev/null || true ;;
                     *) echo "  ⏭️  Пропущен: $fname" ;;
                 esac
                 ;;
             3)  # Overwrite
                 cp "$src" "$dst"
+                COPIED_PATHS+=("$dst")
                 echo "  ✅ Перезаписан: $fname"
                 ;;
         esac
     else
         cp "$src" "$dst"
+        COPIED_PATHS+=("$dst")
         echo "  ➕ Добавлен: $fname"
     fi
 }
@@ -223,8 +226,7 @@ if [ -d "$SCRIPT_DIR/scripts" ]; then
     for src_script in "$SCRIPT_DIR/scripts/"*.sh; do
         [ -f "$src_script" ] || continue
         fname=$(basename "$src_script")
-        cp "$src_script" "$WORKSPACE/scripts/$fname"
-        chmod +x "$WORKSPACE/scripts/$fname"
+        safe_copy_file "$src_script" "$WORKSPACE/scripts/$fname"
         echo "  ✅ $fname"
     done
 fi
@@ -239,6 +241,7 @@ if [ -d "$SCRIPT_DIR/skills" ]; then
         skill_name=$(basename "$skill_dir")
         if [ ! -d "$WORKSPACE/skills/$skill_name" ]; then
             cp -r "$skill_dir" "$WORKSPACE/skills/"
+            COPIED_PATHS+=("$WORKSPACE/skills/$skill_name")
             echo "  ➕ $skill_name"
         else
             echo "  ⏭️  Существует: $skill_name"
@@ -249,31 +252,9 @@ fi
 # 6. Заменяем плейсхолдеры
 echo ""
 echo "✏️  Персонализация..."
-find "$WORKSPACE" -name "*.md" -newer "$BACKUP_DIR" -exec sed -i.tmp \
-    -e "s/\[AGENT_NAME\]/$AGENT_NAME/g" \
-    -e "s/\[OWNER_NAME\]/$OWNER_NAME/g" \
-    -e "s/\[OWNER_ID\]/$OWNER_ID/g" \
-    -e "s/\[OWNER_TELEGRAM\]/@$OWNER_TG/g" \
-    -e "s/\[TRUSTED_USER_ID\]/[не задан]/g" \
-    -e "s|\[TIMEZONE\]|$TIMEZONE|g" \
-    -e "s/\[GMT_OFFSET\]/$TIMEZONE/g" \
-    -e "s/\[EMOJI\]/$EMOJI/g" \
-    -e "s/\[PROJECT_NAME\]/[не задан]/g" \
-    -e "s/\[CHANNEL_NAME\]/[не задан]/g" \
-    -e "s/\[OTHER_AGENT\]/[не задан]/g" \
-    -e "s/\[TRUSTED_USER_NAME\]/[не задан]/g" \
-    -e "s/\[DOCTOR_BOT_NAME\]/[не задан]/g" \
-    -e "s/\[HOST_MACHINE\]/$(hostname)/g" \
-    -e "s/\[HOSTNAME\]/$(hostname)/g" \
-    -e "s|\[HOME_DIR\]|$HOME|g" \
-    {} \; 2>/dev/null || true
-find "$WORKSPACE" -name "*.tmp" -delete 2>/dev/null
-
-# Скрипты
-find "$WORKSPACE/scripts" -name "*.sh" -exec sed -i.tmp \
-    -e "s/\[OWNER_ID\]/$OWNER_ID/g" \
-    {} \; 2>/dev/null || true
-find "$WORKSPACE/scripts" -name "*.tmp" -delete 2>/dev/null
+python3 "$SCRIPT_DIR/scripts/personalize-installed.py" \
+    "$AGENT_NAME" "$OWNER_NAME" "$OWNER_ID" "$OWNER_TG" "$TIMEZONE" "$EMOJI" \
+    "${COPIED_PATHS[@]}"
 
 # 7. SQLite WAL mode
 echo ""
